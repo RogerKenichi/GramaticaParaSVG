@@ -1,32 +1,101 @@
 package com.company;
 import java.util.List;
 import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Scanner;
 
 public class DesenharComGramatica {
-    public double anguloDeVirada = 34; // em graus, que será convertido para radianos.
     public double comprimentoLinha = 4;
 
     private List<LinhaModel> linhas = new ArrayList<LinhaModel>();
     private List<Integer> posicaoRamificacoesLinhas = new ArrayList<Integer>();
     private double[] pontoInicio = {1000, 1000}; // Na qual [0] = x e [1] = y
 
+    private  List<RegraModel> regras = new ArrayList<RegraModel>();
+    private int iteracoes;
+    private double anguloDeVirada = 34; // em graus, que será convertido para radianos.
+    private String condicaoInicial;
+
     public List<LinhaModel>  getLinhas()
     {
         return this.linhas;
     }
 
-    public String aplicarRegras(String expressao)
+    public DesenharComGramatica(String caminhoEntrada)
+    {
+        try {
+            FileReader arq = new FileReader(caminhoEntrada);
+            BufferedReader lerArq = new BufferedReader(arq);
+
+            String linha = lerArq.readLine();
+            while (linha != null) {
+                linha = lerArq.readLine(); // lê da segunda até a última linha
+
+                if(linha != null)
+                    linha = linha.replaceAll("\\s+","");
+                else
+                    break;
+
+                String[] split = linha.split(":");
+                if(split[0].equals("n"))
+                    this.iteracoes = Integer.parseInt(split[1]);
+                else if (split[0].equals("c"))
+                    this.comprimentoLinha = Integer.parseInt(split[1]);
+                else if (split[0].equals("ω"))
+                    this.condicaoInicial = split[1];
+                else if (split[0].equals("δ"))
+                    this.anguloDeVirada = Integer.parseInt(split[1]);
+                else{ // começa a avaliar as regras
+                    String[] splitRegras = split[1].split("→");
+                    RegraModel r = new RegraModel();
+                    r.setLetra(splitRegras[0]);
+                    r.setSubstitui(splitRegras[1]);
+                    this.regras.add(r);
+                }
+            }
+            arq.close();
+
+        } catch (IOException e) {
+            System.err.printf("Erro na abertura do arquivo: %s.\n",
+                    e.getMessage());
+        }
+
+        System.out.println("Número de iterações (n):" + this.iteracoes);
+        System.out.println("Comprimento da linha (c):" + this.comprimentoLinha);
+        System.out.println("Condição inicial (ω):" + this.condicaoInicial);
+        System.out.println("Angulo de virada (δ):" + this.anguloDeVirada);
+
+        for(RegraModel r : this.regras){
+            System.out.println("Regras: " + r.getLetra() + " → " + r.getSubstitui());
+        }
+    }
+
+    public void desenharGramatica()
+    {
+        String condicao = condicaoInicial;
+        for(int i = 2; i < iteracoes; i++){
+            condicao = aplicarRegras(condicao);
+            System.out.println(Integer.toString(i) +": " + condicao);
+        }
+        lerString(condicao);
+    }
+
+    private String aplicarRegras(String expressao)
     {
         String retorno = expressao;
-        //retorno = retorno.replace("F", "FF+[+F-F-F]-[-F+F+F]");
-        retorno = retorno.replace("F", "FF-[+F-F]+[-F+F]"); // FF-[+F-F]+[-F+F]      // FF-[-F-F+F]+[-F-F-F] // FF-[-F-F+F]+[+F-F-F-F]
+        for(RegraModel r : this.regras)
+        {
+            retorno = retorno.replace(r.getLetra(), r.getSubstitui());
+        }
+        // FF-[+F-F]+[-F+F]    // FF-[-F-F+F]+[-F-F-F] // FF-[-F-F+F]+[+F-F-F-F]
 
         return retorno;
     }
 
-    public void lerString(String expressao)
+    private void lerString(String expressao)
     {
-        GeraHtml geradorHtml = new GeraHtml();
         posicaoRamificacoesLinhas.add(0); // A primeira ramificação é a linha principal e deve ser atualizada (setar a ultima posição) sempre que uma linha nova é feita mas não ramificada)
 
         for (int i = 0; i < expressao.length(); i++)
