@@ -23,8 +23,21 @@ O alfabeto ```Σ``` contém:
 
 ```n``` é o número de iterações
 
+```c``` é o comprimento da linha
+
 ```ω``` é a condição inicial
 
-```δ``` é o ângulo de virada
+```δ``` é o ângulo de virada (em graus, somente o número)
 
 ```p1```, ```p2```... são as regras de produção
+
+É preciso que o arquivo esteja organizado nessa ordem.
+
+
+**OBS:** Caso o desenho fique muito grande, é possível alterar ponto de início dele em DesenharComGramatica():
+```
+private double[] pontoInicio = {1000, 1000};
+```
+Na qual o primeiro valor é a posição x e o segundo é a posição y
+
+Por padrão, o SVG gerado tem um tamanho de 2000x2000

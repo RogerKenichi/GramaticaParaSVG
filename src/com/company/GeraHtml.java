@@ -23,11 +23,7 @@ public class GeraHtml {
             escreverArquivo.write("<body>\n");
 
             // Estrutura do svg aqui
-            escreverArquivo.write("<h1>Σ : F, +, -</h1>\n");
-            escreverArquivo.write("<h1>n : 6</h1>\n");
-            escreverArquivo.write("<h1>ω : F-F-F-F</h1>\n");
-            escreverArquivo.write("<h1>δ : 34º</h1>\n");
-            escreverArquivo.write("<h1>p1 : F → FF-[+F-F]+[-F+F]</h1>\n");
+            escreverArquivo.write("<p>RA: 081190026 - EC6</p>\n");
             escreverArquivo.write("<svg width=\"2000\" height=\"2000\">\n");
             for (int i = 0; i < this.linhasPontosSVG.size(); i++)
                 escreverArquivo.write(linhasPontosSVG.get(i));
